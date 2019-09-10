@@ -11,10 +11,32 @@
 
 
 Jenkins是常用的集成工具之一
+![Jenkins](http://image.51linwei.top/1_2evs4lCaKrD03-MzJl5_Dw.jpeg)
+
 
 ## 安装使用
 
+### 原生安装
+
+``` shell
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins.io/redhat/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+sudo yum install jenkins -y
+sudo service jenkins start
+```
+
+### Docker安装
+``` shell
+docker run -u root --name jenkins -d -p 10080:8080 -v /var/jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker --restart=always jenkins/jenkins:lts
+```
+
 ## 基础语法
+
+使用pipeline的意义
+1.版本化控制：可将pipeline提交到git/svn中进行版本控制
+2.有助于协助：pipeline的每次修改都是透明可见的，有助于加强交流
+3.有助于重用：相比手动操作复用性更高，不容易出现丢失关键信息等情况
+
 
 ## 环境变量
 
