@@ -32,6 +32,8 @@ docker run -u root --name jenkins -d -p 10080:8080 -v /var/jenkins_home:/var/jen
 
 ## 基础语法
 
+Jenkins Pipeline是基于Groovy语言实现的一种领域特定语言，用于描述整条流水线式如何进行的
+
 使用pipeline的意义
 
 1. 版本化控制：可将pipeline提交到git/svn中进行版本控制
@@ -46,6 +48,16 @@ docker run -u root --name jenkins -d -p 10080:8080 -v /var/jenkins_home:/var/jen
 #### 声明式语法
 
 声明式语法更符合常人阅读习惯，而且更加简洁，同时也是社区推荐的语法
+
+pipeline 基本结构
+1. pipeline: 代表整条流水线，包含整条流水线逻辑
+2. agent: 指定流水线的执行位置
+3. stages: 阶段列表，stages中至少包含一个stage
+4. stage: 阶段，代表流水线的阶段，每个阶段都含有一个名称
+
+以上每个部分都是必须的，少一个Jenkins都会报错
+
+基本结构无法满足现实中多变的需求，所以Jenkins添加了很多指令来补充Jenkins Pipeline
 
 ## 环境变量
 
