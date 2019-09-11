@@ -43,6 +43,11 @@ Jenkins Pipeline是基于Groovy语言实现的一种领域特定语言，用于�
 ### 语法选择
 
 #### 脚本式语法
+``` shell
+node {
+   echo 'Hello World'
+}
+```
 
 脚本式语法比较灵活、可拓展，但也意味着更复杂，同时Grovvy语言的学习成本对于不使用Grovvy语言的团队其实是不必要的
 #### 声明式语法
@@ -201,10 +206,59 @@ hudson.model.Result是一个枚举值，包括一下值：
 
 ### Webhook触发
 
-
 ## 多分支构建
 
-## 参数化pipeline
+1. 安装Git Parameter插件
+2. 使用when指令区别分支逻辑
 
+``` shell
+stage('Deliver for development') {
+  when {
+    branch 'development'
+  }
+  steps {
+    echo "do something for development branch"
+  }
+}
+stage('Deploy for production') {
+  when {
+    branch 'production'
+  }
+  steps {
+    echo "do something for production branch"
+  }
+}
+```
+
+## 参数配置
+可以通过parameters指令来配置参数
+```
+pipeline {
+  agent any
+  parameters {
+    booleanParam( name: 'isTony', defaultValue: true, description: 'is tony?')
+  }
+  stages {
+    stage("EXAMPLE") {
+      steps {
+        echo ${params.bool}
+      }
+    }
+  }
+}
+```
+
+被传入的参数会被放入到params对象中，在pipeline中可以直接使用
+
+### 参数类型
+1. 字符串：string
+2. 多行文本：text
+3. 布尔值： booleanParam
+
+每个类型都有3个属性：
+
+1. name: 参数名
+2. defaultValue: 默认值
+3. description: 描述信息
 
 ## 项目实战
