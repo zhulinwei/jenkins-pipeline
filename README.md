@@ -24,6 +24,17 @@ sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
 sudo yum install jenkins -y
 sudo service jenkins start
 ```
+默认的Jenkins用户是`Jenkins`，很多命令都很受限，无法执行，我们还需要做如下改进：
+1. 设置环境变量：将系统的PATH路径放入Jenkins中，具体做法是『系统管理』 -> 『系统设置』 -> 『环境变量』中添加环境变量，键名为`PATH`，键值为`/usr/bin:/usr/local/bin`
+2. 更改Jenkins用户： 修改/etc/sysconfig/jenkins文件，将JENKINS_USER改为root
+3. 修改Jenkins文件权限：
+   
+``` shell
+sudo chown -R root:root /var/lib/jenkins
+sudo chown -R root:root /var/cache/jenkins
+sudo chown -R root:root /var/log/jenkins
+```
+4. 重启：sudo service jenkins restart
 
 ### Docker安装
 ``` shell
@@ -44,13 +55,29 @@ Jenkins Pipeline是基于Groovy语言实现的一种领域特定语言，用于�
 
 #### 脚本式语法
 ``` shell
-node {
-   echo 'Hello World'
+node {   
+  stage('Example') {
+    sh 'hello world'
+  }
 }
 ```
 
 脚本式语法比较灵活、可拓展，但也意味着更复杂，同时Grovvy语言的学习成本对于不使用Grovvy语言的团队其实是不必要的
+
 #### 声明式语法
+
+``` shell
+pipeline {
+  agent any
+  stages {
+    stage("Example") {
+      steps {
+        echo 'hello world'
+      }
+    }
+  }
+}
+```
 
 声明式语法更符合常人阅读习惯，而且更加简洁，同时也是社区推荐的语法
 
@@ -93,7 +120,7 @@ pipeline 基本结构
 pipeline {
   agent any
   stages {
-    stage("Exampe") {
+    stage("Example") {
       steps {
         echo "${env.BUILD_NUMBER}-${env.GIT_BRANCH}"
       }
@@ -205,6 +232,7 @@ hudson.model.Result是一个枚举值，包括一下值：
 5. NO_BUILD: 多阶段构建时，前面的阶段存在问题
 
 ### Webhook触发
+
 
 ## 多分支构建
 
