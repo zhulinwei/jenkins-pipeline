@@ -126,5 +126,85 @@ pipeline {
 environment指令可以在pipeline中定义，代表变量作用域为整个pipeline；也可以定义在stage中，代表作用域只在该阶段有效
 
 ## 触发执行
+正常情况下我们再推送完代码后，还需要切换到Jenkins页面手动触发构建，但我们也可以通过设置pipeline触发条件来达到自动化的过程。我们将从时间触发和事件触发分别来介绍一下pipeline的触发条件。
+
+### 时间触发
+Jenkins Pipeline中使用trigger指令来定义时间触发，tigger指令只能被定义在pipeline下，内置支持定时触发cron和轮训触发pollSCM等方式
+
+#### 定时执行
+定时执行就像cronjob，一到时间点酒执行，它的使用场景通常是一些周期性的job
+
+``` shell
+pipeline {
+  agent any
+  triggers {
+    cron('0 0 * * *')
+  }
+  stages {
+    stage("EXAMPLE") {
+      steps {
+        echo "定时触发执行构建"
+      }
+    }
+  }
+}
+```
+
+Jenkins trigger cron语法采用的是UNIX cron语法，一条cron包含5个字段，格式为 MINUTE 
+HOUR DOM MONTH DOW。
+
+#### 轮训触发
+轮训代码仓库是指定期到代码仓库中询问代码是否变化，如果有变化就执行
+
+``` shell
+pipeline {
+  agent any
+  triggers {
+    pollSCM('H/1 * * * *')
+  }
+  stages {
+    stage("EXAMPLE") {
+      steps {
+        echo "轮训触发执行构建"
+      }
+    }
+  }
+}
+```
+
+### 事件触发
+事件触发就是发生了某个事件就触发pipeline执行，这个事件可以是在手动在界面操作触发、其他pipeline触发、HTTP API Webhook触发等等
+
+### pipeline触发
+当某些任务的执行依赖其他任务的执行结果时，就可以使用triggers的upstream方法
+``` shell
+pipeline {
+  agent any
+  triggers {
+    upstream(upstreamProjects: 'job_name', threshold: hudson.model.Result.SUCCESS) 
+  }
+  stages {
+    stage("EXAMPLE") {
+      steps {
+        echo "由上游任务job_name完成后触发"
+      }
+    }
+  }
+}
+```
+hudson.model.Result是一个枚举值，包括一下值：
+1. ABORTED: 任务被手动中止 
+2. FAILURE: 构建失败
+3. SUCCESS: 构建成功
+4. UNSTABLE: 构建不稳定
+5. NO_BUILD: 多阶段构建时，前面的阶段存在问题
+
+### Webhook触发
+
+
+## 多分支构建
+
+## 参数化pipeline
+
 
 ## 项目实战
