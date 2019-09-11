@@ -58,8 +58,72 @@ pipeline 基本结构
 以上每个部分都是必须的，少一个Jenkins都会报错
 
 基本结构无法满足现实中多变的需求，所以Jenkins添加了很多指令来补充Jenkins Pipeline
+1. post：包含整个Pipeline或者是阶段完成后一些附加的步骤，post部分分成多种条件块
+   + always: 无论当前完成状态是什么，都执行
+   + changed: 只要当前完成状态和上一次不一样就执行
+   + fixed: 上一次完成状态为失败或不稳定，而当前状态为成功时执行
+   + regression: 与fixed相反
+   + aborted: 当前执行结果是中止状态时执行
+   + failure: 当前状态为失败时执行
+   + success: 当前状态为成功时执行
+   + unstable: 当前状态为不稳定时执行
+   + cheanup: 无论当前状态是什么，在所以条件块执行完成后都执行
+2. environment: 用于设置环境变量
+3. tools: 下载并安装我们指定的工具，并将其加入PATH环境中
+4. input: 暂停pipeline，提示输入内容
+5. options: 用于配置Jenkins Pipeline本身的选型
+6. parallel: 并行执行多个step
+7. parameters: 定义参数
+8. triggers: 用于定义执行pipeline的触发器
+9. when: 当满足when定义的条件时才执行
 
 ## 环境变量
+
+环境变量可以看做是Pipeline和Jenkins进行交互的媒介，可以分为内置变量和自定义变量
+
+### 全局变量
+在pipeline执行时，Jenkins通过env将Jenkins内置变量暴露出来
+
+``` shell
+pipeline {
+  agent any
+  stages {
+    stage("Exampe") {
+      steps {
+        echo "${env.BUILD_NUMBER}-${env.GIT_BRANCH}"
+      }
+    }
+  }
+}
+```
+
+我们列举几个常用的内置变量
+1. BUILD_NUMBER: 构建号，累加的数字
+2. BRANCH_NAME: 分支名称，常用语多分支pipeline项目中
+3. BUILD_URL: 当前构建页面的URL
+4. GIT_BRANCH: Git项目分支名称
+
+env中的变量都是Jenkins内置的全局变量，如果有定义全局变量的需求，我们可以在『Manage Jenkins』-> 『Configure System』->『Global properties』中勾选『Environment variables』新增全局环境变量
+
+### 局部变量
+
+声明式pipeline提供了environment指令，方便自定义变量
+``` shell
+pipeline {
+  agent any
+  environment {
+    NAME = 'tony'
+  }
+  stages {
+    stage("EXAMPLE") {
+      steps: {
+        echo ${NAME}
+      }
+    }
+  }
+}
+```
+environment指令可以在pipeline中定义，代表变量作用域为整个pipeline；也可以定义在stage中，代表作用域只在该阶段有效
 
 ## 触发执行
 
